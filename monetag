@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ad Viewing App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            background: linear-gradient(135deg, #1e2a78, #162544);
+            color: white;
+        }
+        .container {
+            margin: 50px auto;
+            max-width: 400px;
+            padding: 20px;
+            background: #2d375a;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .developer {
+            font-size: 14px;
+            margin-bottom: 20px;
+            background: #ff7300;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .stats {
+            margin: 20px 0;
+        }
+        .progress-circle {
+            width: 120px;
+            height: 120px;
+            background: #444;
+            border-radius: 50%;
+            margin: 20px auto;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .progress-circle span {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        button {
+            display: block;
+            width: 80%;
+            margin: 10px auto;
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #555;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Auto Monetag Ads</h1>
+        <p class="developer">Developer By Sourav</p>
+        <div class="stats">
+            <p>Watched Ads: <span id="watched-count">0</span></p>
+            <p>Earned Points: <span id="earned-points">0</span></p>
+        </div>
+        <div class="progress-circle">
+            <span id="progress-percent">0%</span>
+        </div>
+        <button id="watch-ad-button" onclick="watchAd()">Watch Ad</button>
+        <button id="auto-show-button" onclick="startAutoAds()">Auto Show Ads</button>
+        <button id="stop-auto-button" onclick="stopAutoAds()">Stop Auto Ads</button>
+    </div>
+
+    <!-- Monetag Integration Script -->
+    <script src='//niphaumeenses.net/vignette.min.js' data-zone='8576023' data-sdk='show_8576023'></script>">
+    <script>
+        let watchedAds = 0;
+        let earnedPoints = 0;
+        let autoAdsInterval;
+
+        // Monetag publisher configuration
+        const monetagConfig = {
+            publisherId: '2711094', // Replace with your actual Monetag Publisher ID
+            adContainerId: 'ad-container', // The container where the ad will be displayed
+        };
+
+        // Function to watch a single ad
+        function watchAd() {
+            // Load and display Monetag ad
+            const adContainer = document.createElement('div');
+            adContainer.id = monetagConfig.adContainerId;
+            document.body.appendChild(adContainer);
+
+            window.monetag = window.monetag || [];
+            monetag.push({
+                id: monetagConfig.publisherId,
+                containerId: monetagConfig.adContainerId,
+                onClose: () => {
+                    // Update stats after ad is closed
+                    updateStats(1, 10); // 1 ad watched = 10 points earned
+                    adContainer.remove(); // Remove ad container
+                },
+            });
+        }
+
+        // Start automatically showing ads
+        function startAutoAds() {
+            if (!autoAdsInterval) {
+                autoAdsInterval = setInterval(() => {
+                    watchAd();
+                }, 5000); // Show an ad every 5 seconds
+            }
+        }
+
+        // Stop automatically showing ads
+        function stopAutoAds() {
+            clearInterval(autoAdsInterval);
+            autoAdsInterval = null;
+        }
+
+        // Update the statistics
+        function updateStats(adCount, points) {
+            watchedAds += adCount;
+            earnedPoints += points;
+
+            document.getElementById("watched-count").textContent = watchedAds;
+            document.getElementById("earned-points").textContent = earnedPoints;
+
+            const percent = Math.min((watchedAds / 10) * 100, 100); // Assume 10 ads = 100%
+            document.getElementById("progress-percent").textContent = `${percent}%`;
+        }
+    </script>
+</body>
+</html>
